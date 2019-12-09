@@ -114,6 +114,9 @@ r/lib
 scala/mal.jar
 scala/target
 scala/project
+scaladd/mal.jar
+scaladd/**/target
+scaladd/.idea
 skew/*.js
 tcl/mal.tcl
 vb/*.exe
