@@ -14,9 +14,13 @@ class ReplSpec extends AnyFlatSpec with Matchers {
     printString(readString("abc")) mustEqual "abc"
     printString(readString("abc ")) mustEqual "abc"
     printString(readString("(123 456)")) mustEqual "(123 456)"
-    printString(readString("(123 456")) mustEqual "(123 456)"
     printString(readString("( 123 456 789 )")) mustEqual "(123 456 789)"
     printString(readString("( + 2 (* 3 4) )")) mustEqual "(+ 2 (* 3 4))"
+    printString(readString("[ +   1   [+   2 3   ]   ]")) mustEqual "[+ 1 [+ 2 3]]"
+  }
+
+  it must "correctly handle String quotes" in {
+    printString(readString("\"")) mustEqual "\""
   }
 
 }

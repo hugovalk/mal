@@ -18,4 +18,9 @@ class ReaderSpec extends AnyFlatSpec with Matchers {
   it must "throw an error when not closed" in {
     assertThrows[IllegalStateException](readString("(test test"))
   }
+  it must "throw an error when Strings are invalid" in {
+    assertThrows[IllegalStateException](readString("\""))
+    assertThrows[IllegalStateException](readString("\"\\\""))
+    assertThrows[IllegalStateException](readString("\"\"\""))
+  }
 }
