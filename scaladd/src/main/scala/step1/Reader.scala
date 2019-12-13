@@ -42,6 +42,11 @@ object Reader {
     val (result, remaining) = readForm(tokens)
     (MalList(Vector(quoteSymol, result)), remaining)
   }
+  def meta(tokens: List[Token]): (MalType, List[Token]) = {
+    val (meta, remaining) = readForm(tokens)
+    val (result, finalRemaining) = readForm(remaining)
+    (MalList(Vector(MalSymbol("with-meta"), meta, result)), finalRemaining)
+  }
 
   def readForm(tokens: List[Token]): (MalType, List[Token]) = {
     tokens match {
@@ -51,6 +56,8 @@ object Reader {
       case t :: ts if t == "`" => quoting(ts, MalSymbol("quasiquote"))
       case t :: ts if t == "~" => quoting(ts, MalSymbol("unquote"))
       case t :: ts if t == "~@" => quoting(ts, MalSymbol("splice-unquote"))
+      case t :: ts if t == "@" => quoting(ts, MalSymbol("deref"))
+      case t :: ts if t == "^" => meta(ts)
       case _ => readAtom(tokens)
     }
   }
