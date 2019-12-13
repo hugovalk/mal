@@ -38,10 +38,19 @@ object Reader {
     case Nil => throw new IllegalStateException("No atom in empty token list.")
   }
 
+  def quoting(tokens: List[Token], quoteSymol: MalSymbol): (MalType, List[Token]) = {
+    val (result, remaining) = readForm(tokens)
+    (MalList(Vector(quoteSymol, result)), remaining)
+  }
+
   def readForm(tokens: List[Token]): (MalType, List[Token]) = {
     tokens match {
       case t :: ts if t == "(" => readSeq(MalList(), ts, ")")
       case t :: ts if t == "[" => readSeq(MalVec(), ts, "]")
+      case t :: ts if t == "'" => quoting(ts, MalSymbol("quote"))
+      case t :: ts if t == "`" => quoting(ts, MalSymbol("quasiquote"))
+      case t :: ts if t == "~" => quoting(ts, MalSymbol("unquote"))
+      case t :: ts if t == "~@" => quoting(ts, MalSymbol("splice-unquote"))
       case _ => readAtom(tokens)
     }
   }
