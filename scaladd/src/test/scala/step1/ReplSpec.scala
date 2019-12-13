@@ -20,7 +20,7 @@ class ReplSpec extends AnyFlatSpec with Matchers {
   }
 
   it must "correctly handle String quotes" in {
-    printString(readString("\"")) mustEqual "\""
+    printString(readString("\"\"")) mustEqual "\"\""
+    printString(readString("\"abc\"")) mustEqual "\"abc\""
   }
-
 }

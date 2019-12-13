@@ -13,3 +13,4 @@ case class MalVec(items: Vector[MalType] = Vector()) extends MalSeq {
 }
 
 case class MalSymbol(value: String) extends MalType
+case object MalNil extends MalType
