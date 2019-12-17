@@ -1,4 +1,6 @@
-package step1
+package mal
+
+import mal.types._
 
 import scala.util.matching.Regex
 
@@ -60,7 +62,7 @@ object Reader {
   def meta(tokens: List[Token]): (MalType, List[Token]) = {
     val (meta, remaining) = readForm(tokens)
     val (result, finalRemaining) = readForm(remaining)
-    (MalList(Vector(MalSymbol("with-meta"), meta, result)), finalRemaining)
+    (MalList(MalSymbol("with-meta"), result, meta), finalRemaining)
   }
 
   def readForm(tokens: List[Token]): (MalType, List[Token]) = {

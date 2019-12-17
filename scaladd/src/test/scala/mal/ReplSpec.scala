@@ -1,4 +1,4 @@
-package step1
+package mal
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers

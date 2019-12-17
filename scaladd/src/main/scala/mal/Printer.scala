@@ -1,4 +1,6 @@
-package step1
+package mal
+
+import mal.types._
 
 object Printer {
   def printString(malType: MalType): String = malType match {

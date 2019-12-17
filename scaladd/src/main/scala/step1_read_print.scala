@@ -1,5 +1,5 @@
 import scala.io.StdIn
-import step1.Repl
+import mal.Repl
 
 object step1_read_print extends App with Repl{
   def loop(): Unit = {

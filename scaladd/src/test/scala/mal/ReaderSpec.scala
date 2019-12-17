@@ -1,8 +1,9 @@
-package step1
+package mal
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import Reader.readString
+import mal.types._
 
 class ReaderSpec extends AnyFlatSpec with Matchers {
   "Symbols" must "be parsed correctly" in {
@@ -10,13 +11,13 @@ class ReaderSpec extends AnyFlatSpec with Matchers {
   }
 
   "List" must "be parsed correctly when empty" in {
-    readString("()") mustEqual MalList(Vector())
-    readString("( )") mustEqual MalList(Vector())
+    readString("()") mustEqual MalList()
+    readString("( )") mustEqual MalList()
   }
 
   it must "be parsed correctly containing symbols" in {
-    readString("(test)") mustEqual MalList(Vector(MalSymbol("test")))
-    readString("(test test2)") mustEqual MalList(Vector(MalSymbol("test"), MalSymbol("test2")))
+    readString("(test)") mustEqual MalList(MalSymbol("test"))
+    readString("(test test2)") mustEqual MalList(MalSymbol("test"), MalSymbol("test2"))
   }
 
   it must "throw an error when not closed" in {

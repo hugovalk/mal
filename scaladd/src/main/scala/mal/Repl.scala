@@ -1,6 +1,7 @@
-package step1
+package mal
 import Reader.readString
 import Printer.printString
+import mal.types.MalType
 
 import scala.util.{Failure, Success, Try}
 
