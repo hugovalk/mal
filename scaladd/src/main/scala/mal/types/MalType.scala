@@ -29,5 +29,7 @@ case class MalMap(items: Map[MalType, MalType] = Map()) extends MalType {
 }
 
 case class MalSymbol(value: String) extends MalType
+case class MalString(value: String) extends MalType
+case class MalNumber(value: BigDecimal) extends MalType
 case object MalNil extends MalType
 

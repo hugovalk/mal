@@ -43,14 +43,7 @@ object Reader {
     }
   }
 
-  def invalidString(token: String): Boolean = {
-    token == "\"" ||
-      !token.endsWith("\"") ||
-      !"^.*?([\\\\]*)\"$".r.findFirstMatchIn(token).forall(_.group(1).length % 2 == 0)
-  }
-
   def readAtom(tokens: List[Token]): (MalType, List[Token]) = tokens match {
-    case t :: _ if t.startsWith("\"") && invalidString(t) => throw new IllegalStateException(".*(EOF|end of input|unbalanced).*")
     case t :: ts => (MalSymbol(t), ts)
     case Nil => throw new IllegalStateException("No atom in empty token list.")
   }
@@ -65,6 +58,22 @@ object Reader {
     (MalList(MalSymbol("with-meta"), result, meta), finalRemaining)
   }
 
+  def invalidString(token: String): Boolean = {
+    token == "\"" ||
+      !token.endsWith("\"") ||
+      !"^.*?([\\\\]*)\"$".r.findFirstMatchIn(token).forall(_.group(1).length % 2 == 0)
+  }
+
+  def readStr(token: Token): MalString = {
+    if (invalidString(token))
+      throw new IllegalStateException(".*(EOF|end of input|unbalanced).*")
+    else
+      MalString(token)
+  }
+
+  def readNumber(token: Token): MalNumber =
+    MalNumber(BigDecimal(token))
+
   def readForm(tokens: List[Token]): (MalType, List[Token]) = {
     tokens match {
       case t :: ts if t == "(" => readSeq(MalList(), ts, ")")
@@ -76,6 +85,8 @@ object Reader {
       case t :: ts if t == "@" => quoting(ts, MalSymbol("deref"))
       case t :: ts if t == "^" => meta(ts)
       case t :: ts if t == "{" => readMap(MalMap(), ts)
+      case t :: ts if t.startsWith("\"") => (readStr(t), ts)
+      case t :: ts if t.matches("[0-9.]+") => (readNumber(t), ts)
       case _ => readAtom(tokens)
     }
   }

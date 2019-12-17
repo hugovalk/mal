@@ -25,8 +25,14 @@ class ReaderSpec extends AnyFlatSpec with Matchers {
   }
 
   "Strings" must "be parsed correctly" in {
-    readString("\"\"") mustEqual MalSymbol("\"\"")
-    readString("\"abc\"") mustEqual MalSymbol("\"abc\"")
+    readString("\"\"") mustEqual MalString("\"\"")
+    readString("\"abc\"") mustEqual MalString("\"abc\"")
+  }
+
+  "Numbers" must "be parsed correctly" in {
+    readString("1") mustEqual MalNumber(BigDecimal(1))
+    readString("1463724637816516378") mustEqual MalNumber(BigDecimal("1463724637816516378"))
+    readString("1.43287932758329578293875475") mustEqual MalNumber(BigDecimal("1.43287932758329578293875475"))
   }
 
   it must "throw an error when Strings are invalid" in {

@@ -8,6 +8,8 @@ object Printer {
     case MalVec(vector) => s"[${vector.map(printString).mkString(" ")}]"
     case MalMap(map) => s"{${map.map{case (k, v) => s"${printString(k)} ${printString(v)}"}.mkString(" ")}}"
     case MalSymbol(value) => value
+    case MalString(value) => value
+    case MalNumber(value) => s"$value"
     case MalNil => "nil"
   }
 }
