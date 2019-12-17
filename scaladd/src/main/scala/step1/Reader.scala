@@ -26,6 +26,21 @@ object Reader {
     }
   }
 
+  def readMap(result: MalMap, tokens: List[Token]): (MalMap, List[Token]) = {
+    tokens match {
+      case t :: ts if t == "}" => (result, ts)
+      case t :: _ if t != "}" =>
+        val (form1, remaining1) = readForm(tokens)
+        remaining1 match {
+          case t2 :: ts2 if t2 != "}" =>
+            val (form2, remaining2) = readForm(remaining1)
+            readMap(result.+((form1, form2)), remaining2)
+          case _ => throw new IllegalStateException(".*(EOF|end of input|unbalanced).*")
+        }
+      case Nil => throw new IllegalStateException(".*(EOF|end of input|unbalanced).*")
+    }
+  }
+
   def invalidString(token: String): Boolean = {
     token == "\"" ||
       !token.endsWith("\"") ||
@@ -58,6 +73,7 @@ object Reader {
       case t :: ts if t == "~@" => quoting(ts, MalSymbol("splice-unquote"))
       case t :: ts if t == "@" => quoting(ts, MalSymbol("deref"))
       case t :: ts if t == "^" => meta(ts)
+      case t :: ts if t == "{" => readMap(MalMap(), ts)
       case _ => readAtom(tokens)
     }
   }
