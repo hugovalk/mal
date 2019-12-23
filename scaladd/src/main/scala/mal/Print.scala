@@ -2,7 +2,10 @@ package mal
 
 import mal.types._
 
-object Printer {
+/**
+ * Contains functions necessary to convert a [[MalType]] to [[String]].
+ */
+trait Print {
   def printString(malType: MalType): String = malType match {
     case MalList(vector) => s"(${vector.map(printString).mkString(" ")})"
     case MalVec(vector) => s"[${vector.map(printString).mkString(" ")}]"

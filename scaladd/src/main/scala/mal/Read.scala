@@ -4,10 +4,18 @@ import mal.types._
 
 import scala.util.matching.Regex
 
-object Reader {
-  val MAL_PATTERN: Regex = "[\\s,]*(~@|[\\[\\]{}()'`~^@]|\"(?:\\\\.|[^\\\\\"])*\"?|;.*|[^\\s\\[\\]{}('\"`,;)]*)".r
+/**
+ * Contains the functions needed to read an input string and convert it to [[MalType]].
+ */
+trait Read {
+  private val MAL_PATTERN: Regex = "[\\s,]*(~@|[\\[\\]{}()'`~^@]|\"(?:\\\\.|[^\\\\\"])*\"?|;.*|[^\\s\\[\\]{}('\"`,;)]*)".r
   type Token = String
 
+  /**
+   * Reads an input string and converts it to a [[MalType]].
+   * @param input the input string
+   * @return [[scala.util.Success]] containing the parsed MAL type input is valid. [[scala.util.Failure]] otherwise.
+   */
   def readString(input: String): MalType = {
     val (result, remainingTokens) = readForm(tokenize(input))
     if (remainingTokens.nonEmpty)
@@ -15,10 +23,10 @@ object Reader {
     result
   }
 
-  def tokenize(input: String): List[Token] =
+  private def tokenize(input: String): List[Token] =
     MAL_PATTERN.findAllMatchIn(input).toList.map(_.group(1)).filter(t => t != "" && !t.startsWith(";"))
 
-  def readForm(tokens: List[Token]): (MalType, List[Token]) = {
+  private def readForm(tokens: List[Token]): (MalType, List[Token]) = {
     tokens match {
       case t :: ts if t == "(" => buildSequence(MalList(), ts, ")")
       case t :: ts if t == "[" => buildSequence(MalVec(), ts, "]")
@@ -33,7 +41,7 @@ object Reader {
     }
   }
 
-  def buildSequence(result: MalSeq, tokens: List[Token], endToken: Token): (MalSeq, List[Token]) = {
+  private def buildSequence(result: MalSeq, tokens: List[Token], endToken: Token): (MalSeq, List[Token]) = {
     tokens match {
       case t :: ts if t == endToken => (result, ts)
       case t :: _ if t != endToken =>
@@ -43,7 +51,7 @@ object Reader {
     }
   }
 
-  def buildMap(result: MalMap, tokens: List[Token]): (MalMap, List[Token]) = {
+  private def buildMap(result: MalMap, tokens: List[Token]): (MalMap, List[Token]) = {
     tokens match {
       case t :: ts if t == "}" => (result, ts)
       case t :: _ if t != "}" =>
@@ -58,18 +66,18 @@ object Reader {
     }
   }
 
-  def buildQuoted(tokens: List[Token], quoteSymol: MalSymbol): (MalType, List[Token]) = {
+  private def buildQuoted(tokens: List[Token], quoteSymol: MalSymbol): (MalType, List[Token]) = {
     val (result, remaining) = readForm(tokens)
     (MalList(Vector(quoteSymol, result)), remaining)
   }
 
-  def buildWithMeta(tokens: List[Token]): (MalType, List[Token]) = {
+  private def buildWithMeta(tokens: List[Token]): (MalType, List[Token]) = {
     val (meta, remaining) = readForm(tokens)
     val (result, finalRemaining) = readForm(remaining)
     (MalList(MalSymbol("with-meta"), result, meta), finalRemaining)
   }
 
-  def buildString(token: Token): MalString = {
+  private def buildString(token: Token): MalString = {
     def invalidString(token: String): Boolean = {
       token == "\"" ||
         !token.endsWith("\"") ||
@@ -82,10 +90,10 @@ object Reader {
       MalString(token)
   }
 
-  def buildNumber(token: Token): MalNumber =
+  private def buildNumber(token: Token): MalNumber =
     MalNumber(BigDecimal(token))
 
-  def buildAtom(tokens: List[Token]): (MalType, List[Token]) = tokens match {
+  private def buildAtom(tokens: List[Token]): (MalType, List[Token]) = tokens match {
     case t :: ts if t.startsWith("\"") => (buildString(t), ts)
     case t :: ts if t.matches("[0-9.]+") => (buildNumber(t), ts)
     case t :: ts => (MalSymbol(t), ts)

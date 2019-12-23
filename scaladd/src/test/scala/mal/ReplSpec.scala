@@ -2,10 +2,9 @@ package mal
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import Reader.readString
-import Printer.printString
 
-class ReplSpec extends AnyFlatSpec with Matchers {
+
+class ReplSpec extends AnyFlatSpec with Matchers with Repl {
 
   "Print" must "be consistent with read for numbers" in {
     printString(readString("123")) mustEqual "123"

@@ -2,10 +2,10 @@ package mal
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import Reader.readString
 import mal.types._
 
-class ReaderSpec extends AnyFlatSpec with Matchers {
+
+class ReadSpec extends AnyFlatSpec with Matchers with Read {
   "Symbols" must "be parsed correctly" in {
     readString("test") mustEqual MalSymbol("test")
   }
